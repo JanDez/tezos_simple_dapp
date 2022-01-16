@@ -15,3 +15,17 @@ type entrypoints =
 | Transfer of transfer_params
 | Receive of nat ticket
 
+type data =
+[@layout:comb]
+{
+    admin: address;
+    native_token: token_id;
+}
+
+type ledger = ((token_id * address), token) big_map
+
+type storage =
+{
+    data: data;
+    ledger: ledger;
+}
