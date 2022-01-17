@@ -16,4 +16,12 @@ let mint (token_amount, (data, ledger): nat * (data * ledger)): storage =
                 (* admin already had a balance *)
                 (* creates a new token *)
                 let new_token: token = Tezos.create_ticket data.native_token token_amount in
-                
+                (* join the current token from the ledger with the new one *)
+                let joined_token: token =
+                    match Tezos.join_tickets (op_t, new_token) with
+                    | None -> (failwith "UNJOINABLE_TICKETS": token)
+                    | Some joined -> joined in
+                    (* update the ledger with new token *)
+                    Big_map.get_and_update (data.native_token, Tezos.sender) (Some joined_token) ledger_1
+                in
+            { data = data; ledger = ledger_2}
