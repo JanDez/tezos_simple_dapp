@@ -22,3 +22,14 @@ let transfer ((p, (data, ledger)): (transfer_params * (data * ledger))): operati
             | None -> Tezos.create_ticket p.token_id 0n
             | Some t -> t
         in
+        (* deducts token amount from sender's balance by splitting his ticket *)
+        let (new_sender_token, amount_to_transfer) = 
+            match Tezos.split_ticket sender_token (abs (sender_balance - p.token_amount), p.token_amount) with
+            | None -> (failwith "FAILED_TO_SPLIT_TICKETS": token * token)
+            | Some tcks -> tcks in
+        (* adds token amount to recipient's balance by joining tickets *)
+        let new_recipient_token =
+            match Tezos.join_tickets (recipient_token, amount_to_transfer) with
+            | None -> (failwith "FAILED_TO_JOIN_TICKETS": token)
+            | Some t -> t in
+        
