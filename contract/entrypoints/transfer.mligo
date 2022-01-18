@@ -8,3 +8,17 @@ let transfer ((p, (data, ledger)): (transfer_params * (data * ledger))): operati
         | Some t ->
             let ((_, (_, b)), tck) = Tezos.read_ticket t in
             b, tck
+    in
+    (* Checks if sender has enough balance *)
+    if sender_balance < p.token_amount
+    then (failwith "INSUFFICIENT_BALANCE": operation list * storage)
+    else
+        (* finds recipient in ledger *)
+        let (recipient_ticket, ledger_2) =
+            Big_map.get_and_update (p.token_id, p.recipient) (None: token option) ledger_1 in
+        (* checks if recipient has previous token *)
+        let recipient_token: token =
+            match recipient_ticket with
+            | None -> Tezos.create_ticket p.token_id 0n
+            | Some t -> t
+        in
