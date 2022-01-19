@@ -1,3 +1,4 @@
+#include "./interface.mligo"
 #include "./entrypoints/mint.mligo"
 #include "./entrypoints/transfer.mligo"
 #include "./entrypoints/receive.mligo"
