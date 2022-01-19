@@ -32,4 +32,10 @@ let transfer ((p, (data, ledger)): (transfer_params * (data * ledger))): operati
             match Tezos.join_tickets (recipient_token, amount_to_transfer) with
             | None -> (failwith "FAILED_TO_JOIN_TICKETS": token)
             | Some t -> t in
-        
+        (* saves sender's token in the storage *)
+        let (_, ledger_3) =
+            Big_map.get_and_update (p.token_id, Tezos.sender) (Some new_sender_token) ledger_2 in
+        (* Saves recipient's token in the storage*)
+        let (_, ledger_3) =
+            Big_map.get_and_update (p.token_id, p.recipient) (Some new_recipient_token) ledger_3 in
+        ([]: operation list), { data = data; ledger = ledger_4 }
